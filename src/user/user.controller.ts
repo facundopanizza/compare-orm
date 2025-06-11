@@ -3,6 +3,7 @@ import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTa
 import { plainToInstance } from 'class-transformer';
 import { UserInputDto } from './dtos/input/user.input.dto';
 import { UserOutputDto } from './dtos/output/user.output.dto';
+import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { UserService } from './user.service';
 
 const USER_NOT_FOUND = 'User not found';
@@ -16,9 +17,17 @@ export class UserController {
     @HttpCode(HttpStatus.CREATED)
     @Post()
     async createUser(@Body() user: UserInputDto): Promise<UserOutputDto> {
-        const createdUser = await this.userService.createUser(user);
+        try {
+            const createdUser = await this.userService.createUser(user);
 
-        return plainToInstance(UserOutputDto, createdUser);
+            return plainToInstance(UserOutputDto, createdUser);
+        } catch (error) {
+            if (error instanceof UserNotFoundException) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            throw error;
+        }
     }
 
     @ApiOkResponse({ type: UserOutputDto })
@@ -26,13 +35,17 @@ export class UserController {
     @ApiParam({ name: 'email', required: true })
     @Get('find-by-email/:email')
     async findUserByEmail(@Param('email') email: string): Promise<UserOutputDto> {
-        const foundUser = await this.userService.findUserByEmail(email);
+        try {
+            const foundUser = await this.userService.findUserByEmail(email);
 
-        if (!foundUser) {
-            throw new NotFoundException(USER_NOT_FOUND);
+            return plainToInstance(UserOutputDto, foundUser);
+        } catch (error) {
+            if (error instanceof UserNotFoundException) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            throw error;
         }
-
-        return plainToInstance(UserOutputDto, foundUser);
     }
 
     @ApiOkResponse({ type: UserOutputDto })
@@ -40,13 +53,17 @@ export class UserController {
     @ApiParam({ name: 'id', required: true })
     @Get(':id')
     async findUserById(@Param('id') id: number): Promise<UserOutputDto> {
-        const foundUser = await this.userService.findUserById(id);
+        try {
+            const foundUser = await this.userService.findUserById(id);
 
-        if (!foundUser) {
-            throw new NotFoundException(USER_NOT_FOUND);
+            return plainToInstance(UserOutputDto, foundUser);
+        } catch (error) {
+            if (error instanceof UserNotFoundException) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            throw error;
         }
-
-        return plainToInstance(UserOutputDto, foundUser);
     }
 
     @ApiOkResponse({ type: UserOutputDto })
@@ -54,13 +71,17 @@ export class UserController {
     @ApiParam({ name: 'id', required: true })
     @Put(':id')
     async updateUser(@Param('id') id: number, @Body() user: UserInputDto): Promise<UserOutputDto> {
-        const updatedUser = await this.userService.updateUser(id, user);
+        try {
+            const updatedUser = await this.userService.updateUser(id, user);
 
-        if (!updatedUser) {
-            throw new NotFoundException(USER_NOT_FOUND);
+            return plainToInstance(UserOutputDto, updatedUser);
+        } catch (error) {
+            if (error instanceof UserNotFoundException) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            throw error;
         }
-
-        return plainToInstance(UserOutputDto, updatedUser);
     }
 
     @ApiOkResponse({ type: UserOutputDto })
@@ -68,12 +89,20 @@ export class UserController {
     @ApiParam({ name: 'id', required: true })
     @Delete(':id')
     async deleteUser(@Param('id') id: number): Promise<true | null> {
-        const deletedUser = await this.userService.deleteUser(id);
+        try {
+            const deletedUser = await this.userService.deleteUser(id);
 
-        if (!deletedUser) {
-            throw new NotFoundException(USER_NOT_FOUND);
+            if (!deletedUser) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            return deletedUser;
+        } catch (error) {
+            if (error instanceof UserNotFoundException) {
+                throw new NotFoundException(USER_NOT_FOUND);
+            }
+
+            throw error;
         }
-
-        return deletedUser;
     }
 }
