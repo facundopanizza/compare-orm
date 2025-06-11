@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "typeorm:migration:generate": "npx typeorm-ts-node-commonjs migration:generate src/typeorm-migrations/InitMigration -d ormconfig.ts",
+    "typeorm:migration:generate": "npx typeorm-ts-node-commonjs migration:generate typeorm-migrations/InitMigration -d ormconfig.ts",
     "typeorm:migration:run": "npx typeorm-ts-node-commonjs migration:run -d ormconfig.ts",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
