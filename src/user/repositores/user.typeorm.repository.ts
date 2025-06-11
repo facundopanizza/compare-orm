@@ -1,16 +1,21 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, OnModuleInit } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { User } from "../entities/user.entity";
 import { UserInputDto } from "../dtos/input/user.input.dto";
+import { User } from "../entities/user.entity";
 import { UserTypeorm } from "../entities/user.entity.typeorm";
+import { IUserRepository } from "../interfaces/user-repository.interface";
 
 @Injectable()
-export class UserRepository {
+export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
     constructor(
         @InjectRepository(UserTypeorm)
         private userRepository: Repository<UserTypeorm>
     ) { }
+
+    async onModuleInit() {
+        console.log('Using TypeORM')
+    }
 
     async createUser(user: UserInputDto): Promise<User> {
         const savedUser = await this.userRepository.save(user);

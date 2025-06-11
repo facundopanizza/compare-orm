@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { UserInputDto } from './dtos/input/user.input.dto';
@@ -52,7 +52,7 @@ export class UserController {
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
     @ApiParam({ name: 'id', required: true })
     @Get(':id')
-    async findUserById(@Param('id') id: number): Promise<UserOutputDto> {
+    async findUserById(@Param('id', ParseIntPipe) id: number): Promise<UserOutputDto> {
         try {
             const foundUser = await this.userService.findUserById(id);
 
@@ -70,7 +70,7 @@ export class UserController {
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
     @ApiParam({ name: 'id', required: true })
     @Put(':id')
-    async updateUser(@Param('id') id: number, @Body() user: UserInputDto): Promise<UserOutputDto> {
+    async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: UserInputDto): Promise<UserOutputDto> {
         try {
             const updatedUser = await this.userService.updateUser(id, user);
 
@@ -88,7 +88,7 @@ export class UserController {
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
     @ApiParam({ name: 'id', required: true })
     @Delete(':id')
-    async deleteUser(@Param('id') id: number): Promise<true | null> {
+    async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<true | null> {
         try {
             const deletedUser = await this.userService.deleteUser(id);
 

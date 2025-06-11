@@ -1,6 +1,7 @@
 import { BaseEntity } from "src/common/entities/base.entity";
 import { Entity } from "typeorm";
 import { UserTypeorm } from "./user.entity.typeorm";
+import { User as UserPrisma } from "@prisma/client";
 
 @Entity()
 export class User extends BaseEntity {
@@ -22,5 +23,16 @@ export class User extends BaseEntity {
 
     static fromTypeorm(user: UserTypeorm): User {
         return new User(user);
+    }
+
+    static fromPrisma(user: UserPrisma): User {
+        return new User({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        });
     }
 }
