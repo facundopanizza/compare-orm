@@ -24,7 +24,7 @@ export class UserDrizzleRepository implements IUserRepository, OnModuleInit {
             password: user.password,
         }).returning();
 
-        return User.fromDrizzle(savedUser[0]);
+        return this.toUser(savedUser[0]);
     }
 
     async findUserByEmail(email: string): Promise<User | null> {
@@ -37,7 +37,7 @@ export class UserDrizzleRepository implements IUserRepository, OnModuleInit {
             return null;
         }
 
-        return User.fromDrizzle(foundUser[0]);
+        return this.toUser(foundUser[0]);
     }
 
     async findUserById(id: number): Promise<User | null> {
@@ -50,7 +50,7 @@ export class UserDrizzleRepository implements IUserRepository, OnModuleInit {
             return null;
         }
 
-        return User.fromDrizzle(foundUser[0]);
+        return this.toUser(foundUser[0]);
     }
 
     async updateUser(id: number, user: UserInputDto): Promise<User | null> {
@@ -69,7 +69,7 @@ export class UserDrizzleRepository implements IUserRepository, OnModuleInit {
             .where(eq(schema.usersTable.id, id))
             .returning();
 
-        return User.fromDrizzle(updatedUser[0]);
+        return this.toUser(updatedUser[0]);
     }
 
     async deleteUser(id: number): Promise<true | null> {
@@ -83,5 +83,16 @@ export class UserDrizzleRepository implements IUserRepository, OnModuleInit {
             .where(eq(schema.usersTable.id, id));
 
         return true;
+    }
+
+    private toUser(user: typeof schema.usersTable.$inferSelect): User {
+        return new User({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            createdAt: new Date(user.createdAt),
+            updatedAt: new Date(user.updatedAt),
+        });
     }
 }

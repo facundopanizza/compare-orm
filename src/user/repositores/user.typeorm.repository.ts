@@ -20,7 +20,7 @@ export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
     async createUser(user: UserInputDto): Promise<User> {
         const savedUser = await this.userRepository.save(user);
 
-        return User.fromTypeorm(savedUser);
+        return this.toUser(savedUser);
     }
 
     async findUserByEmail(email: string): Promise<User | null> {
@@ -30,7 +30,7 @@ export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
             return null;
         }
 
-        return User.fromTypeorm(foundUser);
+        return this.toUser(foundUser);
     }
 
     async findUserById(id: number): Promise<User | null> {
@@ -40,7 +40,7 @@ export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
             return null;
         }
 
-        return User.fromTypeorm(foundUser);
+        return this.toUser(foundUser);
     }
 
     async updateUser(id: number, user: UserInputDto): Promise<User | null> {
@@ -56,7 +56,7 @@ export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
 
         const updatedUser = await this.userRepository.save(foundUser);
 
-        return User.fromTypeorm(updatedUser);
+        return this.toUser(updatedUser);
     }
 
     async deleteUser(id: number): Promise<true | null> {
@@ -70,5 +70,16 @@ export class UserTypeOrmRepository implements IUserRepository, OnModuleInit {
 
 
         return true;
+    }
+
+    private toUser(user: UserTypeorm): User {
+        return new User({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+        });
     }
 }
