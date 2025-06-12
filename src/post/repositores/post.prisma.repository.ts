@@ -64,8 +64,8 @@ export class PostPrismaRepository implements IPostRepository {
     if (userId) where.userId = userId;
     if (text) {
       where.OR = [
-        { title: { contains: text, mode: 'insensitive' } },
-        { content: { contains: text, mode: 'insensitive' } },
+        { title: { contains: text } },
+        { content: { contains: text } },
       ];
     }
     if (tags && tags.length > 0) {
@@ -85,7 +85,7 @@ export class PostPrismaRepository implements IPostRepository {
         where,
         orderBy: orderByClause,
         skip,
-        take: limit,
+        take: Number(limit),
       }),
       this.prisma.post.count({ where }),
     ]);

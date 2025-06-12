@@ -97,14 +97,14 @@ export class PostDrizzleRepository implements IPostRepository {
     const [foundPosts, totalResult] = await Promise.all([
       this.drizzle.query.postsTable.findMany({
         where: whereClause,
-        with: {
-          user: true,
-          tags: {
-            with: {
-              tag: true,
-            },
-          },
-        },
+        // with: {
+        //   user: true,
+        //   tags: {
+        //     with: {
+        //       tag: true,
+        //     },
+        //   },
+        // },
         orderBy: (posts, { asc, desc }) => [
           order === 'desc' ? desc(posts[orderBy]) : asc(posts[orderBy]),
         ],

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PostInputDto } from './dtos/input/post.input.dto';
 import { Post } from './entities/post.entity';
 import { IPostRepository } from './interfaces/post-repository.interface';
+import { PostFindQueryDto } from './dtos/input/post.find-query.dto';
 
 const POST_REPOSITORY = 'POST_REPOSITORY';
 
@@ -9,7 +10,11 @@ const POST_REPOSITORY = 'POST_REPOSITORY';
 export class PostService {
   constructor(
     @Inject(POST_REPOSITORY) private postRepository: IPostRepository,
-  ) {}
+  ) { }
+
+  async findPosts(query: PostFindQueryDto): Promise<{ data: Post[]; total: number }> {
+    return this.postRepository.findPosts(query);
+  }
 
   async createPost(post: PostInputDto): Promise<Post> {
     return this.postRepository.createPost(post);

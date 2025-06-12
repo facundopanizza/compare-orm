@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsOptional, IsString, IsNumber, IsArray, IsEnum, Min, Max } from 'class-validator';
 
 export enum PostOrderByField {
@@ -43,12 +44,14 @@ export class PostFindQueryDto {
   @ApiPropertyOptional({ description: 'Page number', default: 1 })
   @IsOptional()
   @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10))
   @Min(1)
   page?: number = 1;
 
   @ApiPropertyOptional({ description: 'Items per page', default: 10 })
   @IsOptional()
   @IsNumber()
+  @Transform(({ value }) => parseInt(value, 10))
   @Min(1)
   @Max(100)
   limit?: number = 10;

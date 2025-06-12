@@ -10,6 +10,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -23,13 +24,30 @@ import { plainToInstance } from 'class-transformer';
 import { PostInputDto } from './dtos/input/post.input.dto';
 import { PostOutputDto } from './dtos/output/post.output.dto';
 import { PostService } from './post.service';
+import { PostFindQueryDto } from './dtos/input/post.find-query.dto';
 
 const POST_NOT_FOUND = 'Post not found';
 
 @ApiTags('Post')
 @Controller('post')
 export class PostController {
-  constructor(private postService: PostService) {}
+  constructor(private postService: PostService) { }
+
+  @ApiOkResponse({ type: [PostOutputDto] })
+  @ApiInternalServerErrorResponse()
+  @Get()
+  async findPosts(@Query() query: PostFindQueryDto): Promise<{ data: PostOutputDto[]; total: number }> {
+    try {
+      const result = await this.postService.findPosts(query);
+
+      return {
+        data: plainToInstance(PostOutputDto, result.data),
+        total: result.total,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 
   @ApiCreatedResponse({ type: PostOutputDto })
   @ApiInternalServerErrorResponse()
