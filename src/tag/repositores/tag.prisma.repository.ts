@@ -7,7 +7,7 @@ import { Tag as TagPrisma } from '@prisma/client';
 
 @Injectable()
 export class TagPrismaRepository implements ITagRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async createTag(tag: TagInputDto): Promise<Tag> {
     const savedTag = await this.prisma.tag.create({ data: tag });
@@ -23,7 +23,10 @@ export class TagPrismaRepository implements ITagRepository {
   async updateTag(id: number, tag: TagInputDto): Promise<Tag | null> {
     const foundTag = await this.prisma.tag.findUnique({ where: { id } });
     if (!foundTag) return null;
-    const updatedTag = await this.prisma.tag.update({ where: { id }, data: tag });
+    const updatedTag = await this.prisma.tag.update({
+      where: { id },
+      data: tag,
+    });
     return this.toTag(updatedTag);
   }
 

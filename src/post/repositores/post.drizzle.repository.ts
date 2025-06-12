@@ -11,27 +11,39 @@ import { eq } from 'drizzle-orm';
 export class PostDrizzleRepository implements IPostRepository {
   constructor(
     @InjectDrizzle()
-    private readonly drizzle: BetterSQLite3Database<typeof schema>
-  ) { }
+    private readonly drizzle: BetterSQLite3Database<typeof schema>,
+  ) {}
 
   async createPost(post: PostInputDto): Promise<Post> {
     // Example: insert and return
-    const [created] = await this.drizzle.insert(schema.postsTable).values(post).returning();
+    const [created] = await this.drizzle
+      .insert(schema.postsTable)
+      .values(post)
+      .returning();
     return this.toPost(created);
   }
 
   async findPostById(id: number): Promise<Post | null> {
-    const [found] = await this.drizzle.select().from(schema.postsTable).where(eq(schema.postsTable.id, id));
+    const [found] = await this.drizzle
+      .select()
+      .from(schema.postsTable)
+      .where(eq(schema.postsTable.id, id));
     return found ? (found as unknown as Post) : null;
   }
 
   async updatePost(id: number, post: PostInputDto): Promise<Post | null> {
-    const [updated] = await this.drizzle.update(schema.postsTable).set(post).where(eq(schema.postsTable.id, id)).returning();
+    const [updated] = await this.drizzle
+      .update(schema.postsTable)
+      .set(post)
+      .where(eq(schema.postsTable.id, id))
+      .returning();
     return updated ? (updated as unknown as Post) : null;
   }
 
   async deletePost(id: number): Promise<true | null> {
-    const result = await this.drizzle.delete(schema.postsTable).where(eq(schema.postsTable.id, id));
+    const result = await this.drizzle
+      .delete(schema.postsTable)
+      .where(eq(schema.postsTable.id, id));
     return result ? true : null;
   }
 

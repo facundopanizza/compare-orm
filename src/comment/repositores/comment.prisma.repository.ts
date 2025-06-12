@@ -7,7 +7,7 @@ import { Comment as CommentPrisma } from '@prisma/client';
 
 @Injectable()
 export class CommentPrismaRepository implements ICommentRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async createComment(comment: CommentInputDto): Promise<Comment> {
     const savedComment = await this.prisma.comment.create({ data: comment });
@@ -15,20 +15,32 @@ export class CommentPrismaRepository implements ICommentRepository {
   }
 
   async findCommentById(id: number): Promise<Comment | null> {
-    const foundComment = await this.prisma.comment.findUnique({ where: { id } });
+    const foundComment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
     if (!foundComment) return null;
     return this.toComment(foundComment);
   }
 
-  async updateComment(id: number, comment: CommentInputDto): Promise<Comment | null> {
-    const foundComment = await this.prisma.comment.findUnique({ where: { id } });
+  async updateComment(
+    id: number,
+    comment: CommentInputDto,
+  ): Promise<Comment | null> {
+    const foundComment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
     if (!foundComment) return null;
-    const updatedComment = await this.prisma.comment.update({ where: { id }, data: comment });
+    const updatedComment = await this.prisma.comment.update({
+      where: { id },
+      data: comment,
+    });
     return this.toComment(updatedComment);
   }
 
   async deleteComment(id: number): Promise<true | null> {
-    const foundComment = await this.prisma.comment.findUnique({ where: { id } });
+    const foundComment = await this.prisma.comment.findUnique({
+      where: { id },
+    });
     if (!foundComment) return null;
     await this.prisma.comment.delete({ where: { id } });
     return true;

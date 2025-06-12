@@ -15,7 +15,7 @@ import { getOrmRepository } from 'src/common/utils/getOrmRepository';
 const useClass = getOrmRepository<ICommentRepository>({
   prisma: CommentPrismaRepository,
   typeorm: CommentTypeormRepository,
-  drizzle: CommentDrizzleRepository
+  drizzle: CommentDrizzleRepository,
 });
 
 @Module({
@@ -25,10 +25,11 @@ const useClass = getOrmRepository<ICommentRepository>({
     PrismaModule,
   ],
   providers: [
-    CommentService, {
+    CommentService,
+    {
       provide: COMMENT_REPOSITORY,
-      useClass
-    }
+      useClass,
+    },
   ],
   controllers: [CommentController],
 })

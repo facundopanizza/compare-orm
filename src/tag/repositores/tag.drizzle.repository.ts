@@ -13,25 +13,37 @@ export class TagDrizzleRepository implements ITagRepository {
   constructor(
     @InjectDrizzle()
     private readonly drizzle: BetterSQLite3Database<typeof schema>,
-  ) { }
+  ) {}
 
   async createTag(tag: TagInputDto): Promise<Tag> {
-    const [created] = await this.drizzle.insert(schema.tagsTable).values(tag).returning();
+    const [created] = await this.drizzle
+      .insert(schema.tagsTable)
+      .values(tag)
+      .returning();
     return this.toTag(created);
   }
 
   async findTagById(id: number): Promise<Tag | null> {
-    const [found] = await this.drizzle.select().from(schema.tagsTable).where(eq(schema.tagsTable.id, id));
+    const [found] = await this.drizzle
+      .select()
+      .from(schema.tagsTable)
+      .where(eq(schema.tagsTable.id, id));
     return found ? this.toTag(found) : null;
   }
 
   async updateTag(id: number, tag: TagInputDto): Promise<Tag | null> {
-    const [updated] = await this.drizzle.update(schema.tagsTable).set(tag).where(eq(schema.tagsTable.id, id)).returning();
+    const [updated] = await this.drizzle
+      .update(schema.tagsTable)
+      .set(tag)
+      .where(eq(schema.tagsTable.id, id))
+      .returning();
     return updated ? this.toTag(updated) : null;
   }
 
   async deleteTag(id: number): Promise<true | null> {
-    const result = await this.drizzle.delete(schema.tagsTable).where(eq(schema.tagsTable.id, id));
+    const result = await this.drizzle
+      .delete(schema.tagsTable)
+      .where(eq(schema.tagsTable.id, id));
     return result ? true : null;
   }
 

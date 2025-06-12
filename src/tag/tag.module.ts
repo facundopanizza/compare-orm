@@ -15,20 +15,17 @@ import { getOrmRepository } from 'src/common/utils/getOrmRepository';
 const useClass = getOrmRepository<ITagRepository>({
   prisma: TagPrismaRepository,
   typeorm: TagTypeormRepository,
-  drizzle: TagDrizzleRepository
+  drizzle: TagDrizzleRepository,
 });
 
 @Module({
-  imports: [
-    ConfigModule,
-    TypeOrmModule.forFeature([TagTypeorm]),
-    PrismaModule,
-  ],
+  imports: [ConfigModule, TypeOrmModule.forFeature([TagTypeorm]), PrismaModule],
   providers: [
-    TagService, {
+    TagService,
+    {
       provide: TAG_REPOSITORY,
-      useClass
-    }
+      useClass,
+    },
   ],
   controllers: [TagController],
 })

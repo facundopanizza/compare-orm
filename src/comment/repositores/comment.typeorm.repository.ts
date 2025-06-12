@@ -11,25 +11,43 @@ export class CommentTypeormRepository implements ICommentRepository {
   constructor(
     @InjectRepository(CommentTypeorm)
     private readonly commentRepo: Repository<CommentTypeorm>,
-  ) { }
+  ) {}
 
   async createComment(comment: CommentInputDto): Promise<Comment> {
-    const entity = this.commentRepo.create(comment);
+    const entity = this.commentRepo.create({
+      ...comment,
+      user: { id: comment.userId },
+      post: { id: comment.postId },
+    });
     const saved = await this.commentRepo.save(entity);
-    const created = await this.commentRepo.findOne({ where: { id: saved.id }, relations: { user: true, post: true } });
+    const created = await this.commentRepo.findOne({
+      where: { id: saved.id },
+      relations: { user: true, post: true },
+    });
 
     return this.toComment(created!);
   }
 
   async findCommentById(id: number): Promise<Comment | null> {
-    const found = await this.commentRepo.findOne({ where: { id }, relations: { user: true, post: true } });
+    const found = await this.commentRepo.findOne({
+      where: { id },
+      relations: { user: true, post: true },
+    });
     return found ? this.toComment(found) : null;
   }
 
-  async updateComment(id: number, comment: CommentInputDto): Promise<Comment | null> {
-    const found = await this.commentRepo.findOne({ where: { id }, relations: { user: true, post: true } });
+  async updateComment(
+    id: number,
+    comment: CommentInputDto,
+  ): Promise<Comment | null> {
+    const found = await this.commentRepo.findOne({
+      where: { id },
+      relations: { user: true, post: true },
+    });
     if (!found) return null;
-    Object.assign(found, comment);
+
+    found.content = comment.content;
+
     const saved = await this.commentRepo.save(found);
     return this.toComment(saved);
   }

@@ -11,25 +11,34 @@ export class PostTypeormRepository implements IPostRepository {
   constructor(
     @InjectRepository(PostTypeorm)
     private readonly postRepo: Repository<PostTypeorm>,
-  ) { }
+  ) {}
 
   async createPost(post: PostInputDto): Promise<Post> {
-    const entity = this.postRepo.create(post);
+    const entity = this.postRepo.create({ ...post, user: { id: post.userId } });
     const saved = await this.postRepo.save(entity);
-    const createdPost = await this.findPostById(saved.id)
+    const createdPost = await this.findPostById(saved.id);
 
     return createdPost!;
   }
 
   async findPostById(id: number): Promise<Post | null> {
-    const found = await this.postRepo.findOne({ where: { id }, relations: { user: true } });
+    const found = await this.postRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
     return found ? this.toPost(found) : null;
   }
 
   async updatePost(id: number, post: PostInputDto): Promise<Post | null> {
-    const found = await this.postRepo.findOne({ where: { id }, relations: { user: true } });
+    const found = await this.postRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
     if (!found) return null;
-    Object.assign(found, post);
+
+    found.title = post.title;
+    found.content = post.content;
+
     const saved = await this.postRepo.save(found);
     return this.toPost(saved);
   }

@@ -11,25 +11,37 @@ export class ProfileTypeormRepository implements IProfileRepository {
   constructor(
     @InjectRepository(ProfileTypeorm)
     private readonly profileRepo: Repository<ProfileTypeorm>,
-  ) { }
+  ) {}
 
   async createProfile(profile: ProfileInputDto): Promise<Profile> {
-    const entity = this.profileRepo.create(profile);
+    const entity = this.profileRepo.create({
+      ...profile,
+      user: { id: profile.userId },
+    });
     const saved = await this.profileRepo.save(entity);
-    const createdUser = await this.findProfileById(saved.id)
+    const createdUser = await this.findProfileById(saved.id);
 
     return createdUser!;
   }
 
   async findProfileById(id: number): Promise<Profile | null> {
-    const found = await this.profileRepo.findOne({ where: { id }, relations: { user: true } });
+    const found = await this.profileRepo.findOne({
+      where: { id },
+      relations: { user: true },
+    });
     return found ? this.toProfile(found) : null;
   }
 
-  async updateProfile(id: number, profile: ProfileInputDto): Promise<Profile | null> {
+  async updateProfile(
+    id: number,
+    profile: ProfileInputDto,
+  ): Promise<Profile | null> {
     const found = await this.profileRepo.findOne({ where: { id } });
     if (!found) return null;
-    Object.assign(found, profile);
+
+    found.avatar = profile.avatar;
+    found.bio = profile.bio;
+
     const saved = await this.profileRepo.save(found);
     return this.toProfile(saved);
   }

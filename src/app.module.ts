@@ -5,8 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as schema from '../drizzle/schema';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CommentModule } from './comment/comment.module';
 import databaseConfig from './common/config/database.config';
+import { PostModule } from './post/post.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { ProfileModule } from './profile/profile.module';
+import { TagModule } from './tag/tag.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -18,7 +22,7 @@ import { UserModule } from './user/user.module';
       useFactory: (configuration: ConfigType<typeof databaseConfig>) => ({
         type: 'sqlite',
         database: configuration.path,
-        entities: [__dirname + '/user/entities/user.entity.typeorm.{js,ts}'],
+        entities: [__dirname + '/**/*.entity.typeorm.{js,ts}'],
       }),
     }),
     DrizzleBetterSQLiteModule.registerAsync({
@@ -32,9 +36,13 @@ import { UserModule } from './user/user.module';
       }),
     }),
     UserModule,
-    PrismaModule
+    PrismaModule,
+    TagModule,
+    PostModule,
+    CommentModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

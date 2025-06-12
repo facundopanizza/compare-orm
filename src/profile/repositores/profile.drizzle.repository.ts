@@ -11,38 +11,56 @@ import { IProfileRepository } from '../interfaces/profile-repository.interface';
 export class ProfileDrizzleRepository implements IProfileRepository {
   constructor(
     @InjectDrizzle()
-    private readonly drizzle: BetterSQLite3Database<typeof schema>
-  ) { }
+    private readonly drizzle: BetterSQLite3Database<typeof schema>,
+  ) {}
 
   async createProfile(profile: ProfileInputDto): Promise<Profile> {
-    const [created] = await this.drizzle.insert(schema.profilesTable).values({
-      userId: profile.userId,
-      bio: profile.bio,
-      avatar: profile.avatar,
-    }).returning();
+    const [created] = await this.drizzle
+      .insert(schema.profilesTable)
+      .values({
+        userId: profile.userId,
+        bio: profile.bio,
+        avatar: profile.avatar,
+      })
+      .returning();
     return this.toProfile(created);
   }
 
   async findProfileById(id: number): Promise<Profile | null> {
-    const [found] = await this.drizzle.select().from(schema.profilesTable).where(eq(schema.profilesTable.id, id)).limit(1);
+    const [found] = await this.drizzle
+      .select()
+      .from(schema.profilesTable)
+      .where(eq(schema.profilesTable.id, id))
+      .limit(1);
     return found ? this.toProfile(found) : null;
   }
 
-  async updateProfile(id: number, profile: ProfileInputDto): Promise<Profile | null> {
-    const [updated] = await this.drizzle.update(schema.profilesTable).set({
-      userId: profile.userId,
-      bio: profile.bio,
-      avatar: profile.avatar,
-    }).where(eq(schema.profilesTable.id, id)).returning();
+  async updateProfile(
+    id: number,
+    profile: ProfileInputDto,
+  ): Promise<Profile | null> {
+    const [updated] = await this.drizzle
+      .update(schema.profilesTable)
+      .set({
+        userId: profile.userId,
+        bio: profile.bio,
+        avatar: profile.avatar,
+      })
+      .where(eq(schema.profilesTable.id, id))
+      .returning();
     return updated ? this.toProfile(updated) : null;
   }
 
   async deleteProfile(id: number): Promise<true | null> {
-    const result = await this.drizzle.delete(schema.profilesTable).where(eq(schema.profilesTable.id, id));
+    const result = await this.drizzle
+      .delete(schema.profilesTable)
+      .where(eq(schema.profilesTable.id, id));
     return result ? true : null;
   }
 
-  private toProfile(profile: typeof schema.profilesTable.$inferSelect): Profile {
+  private toProfile(
+    profile: typeof schema.profilesTable.$inferSelect,
+  ): Profile {
     return new Profile({
       id: profile.id,
       bio: profile.bio,

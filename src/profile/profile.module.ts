@@ -15,7 +15,7 @@ import { getOrmRepository } from 'src/common/utils/getOrmRepository';
 const useClass = getOrmRepository<IProfileRepository>({
   prisma: ProfilePrismaRepository,
   typeorm: ProfileTypeormRepository,
-  drizzle: ProfileDrizzleRepository
+  drizzle: ProfileDrizzleRepository,
 });
 
 @Module({
@@ -25,10 +25,11 @@ const useClass = getOrmRepository<IProfileRepository>({
     PrismaModule,
   ],
   providers: [
-    ProfileService, {
+    ProfileService,
+    {
       provide: PROFILE_REPOSITORY,
-      useClass
-    }
+      useClass,
+    },
   ],
   controllers: [ProfileController],
 })

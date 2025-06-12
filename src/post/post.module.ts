@@ -13,23 +13,24 @@ import { PostPrismaRepository } from './repositores/post.prisma.repository';
 import { PostTypeormRepository } from './repositores/post.typeorm.repository';
 
 const useClass = getOrmRepository<IPostRepository>({
-    prisma: PostPrismaRepository,
-    typeorm: PostTypeormRepository,
-    drizzle: PostDrizzleRepository
+  prisma: PostPrismaRepository,
+  typeorm: PostTypeormRepository,
+  drizzle: PostDrizzleRepository,
 });
 
 @Module({
-    imports: [
-        ConfigModule,
-        TypeOrmModule.forFeature([PostTypeorm]),
-        PrismaModule,
-    ],
-    providers: [
-        PostService, {
-            provide: POST_REPOSITORY,
-            useClass
-        }
-    ],
-    controllers: [PostController],
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([PostTypeorm]),
+    PrismaModule,
+  ],
+  providers: [
+    PostService,
+    {
+      provide: POST_REPOSITORY,
+      useClass,
+    },
+  ],
+  controllers: [PostController],
 })
-export class PostModule { }
+export class PostModule {}

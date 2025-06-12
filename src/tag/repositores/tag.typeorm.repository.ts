@@ -11,12 +11,12 @@ export class TagTypeormRepository implements ITagRepository {
   constructor(
     @InjectRepository(TagTypeorm)
     private readonly tagRepo: Repository<TagTypeorm>,
-  ) { }
+  ) {}
 
   async createTag(tag: TagInputDto): Promise<Tag> {
     const entity = this.tagRepo.create(tag);
     const saved = await this.tagRepo.save(entity);
-    const created = await this.findTagById(saved.id)
+    const created = await this.findTagById(saved.id);
 
     return created!;
   }
@@ -29,7 +29,9 @@ export class TagTypeormRepository implements ITagRepository {
   async updateTag(id: number, tag: TagInputDto): Promise<Tag | null> {
     const found = await this.tagRepo.findOne({ where: { id } });
     if (!found) return null;
-    Object.assign(found, tag);
+
+    found.name = tag.name;
+
     const saved = await this.tagRepo.save(found);
     return this.toTag(saved);
   }

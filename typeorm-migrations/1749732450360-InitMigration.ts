@@ -1,13 +1,13 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class InitMigration1749697510395 implements MigrationInterface {
-    name = 'InitMigration1749697510395'
+export class InitMigration1749732450360 implements MigrationInterface {
+    name = 'InitMigration1749732450360'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`CREATE TABLE "user_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "email" varchar NOT NULL, "password" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), "updatedAt" datetime NOT NULL DEFAULT (datetime('now')))`);
         await queryRunner.query(`CREATE TABLE "comment_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "content" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), "updatedAt" datetime NOT NULL DEFAULT (datetime('now')), "userId" integer, "postId" integer)`);
         await queryRunner.query(`CREATE TABLE "post_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar NOT NULL, "content" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), "updatedAt" datetime NOT NULL DEFAULT (datetime('now')), "userId" integer)`);
-        await queryRunner.query(`CREATE TABLE "tag_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, CONSTRAINT "UQ_45045ce6feb08909365dd6ef402" UNIQUE ("name"))`);
+        await queryRunner.query(`CREATE TABLE "tag_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar NOT NULL, "createdAt" datetime NOT NULL DEFAULT (datetime('now')), "updatedAt" datetime NOT NULL DEFAULT (datetime('now')), CONSTRAINT "UQ_45045ce6feb08909365dd6ef402" UNIQUE ("name"))`);
         await queryRunner.query(`CREATE TABLE "profile_typeorm" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "bio" varchar, "avatar" varchar, "userId" integer, CONSTRAINT "REL_90e4ef505e45d88f8a7794bc1a" UNIQUE ("userId"))`);
         await queryRunner.query(`CREATE TABLE "post_typeorm_tags_tag_typeorm" ("postTypeormId" integer NOT NULL, "tagTypeormId" integer NOT NULL, PRIMARY KEY ("postTypeormId", "tagTypeormId"))`);
         await queryRunner.query(`CREATE INDEX "IDX_9777d28fa4095f7373b7b51c4b" ON "post_typeorm_tags_tag_typeorm" ("postTypeormId") `);

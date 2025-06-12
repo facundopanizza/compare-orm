@@ -10,59 +10,60 @@ const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UserService {
-    constructor(@Inject(USER_REPOSITORY) private userRepository: IUserRepository) { }
+  constructor(
+    @Inject(USER_REPOSITORY) private userRepository: IUserRepository,
+  ) {}
 
-    async createUser(user: UserInputDto): Promise<User> {
-        const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
+  async createUser(user: UserInputDto): Promise<User> {
+    const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
 
+    return this.userRepository.createUser({
+      ...user,
+      password: hashedPassword,
+    });
+  }
 
-        return this.userRepository.createUser({
-            ...user,
-            password: hashedPassword
-        });
+  async findUserByEmail(email: string): Promise<User> {
+    const foundUser = await this.userRepository.findUserByEmail(email);
+
+    if (!foundUser) {
+      throw new UserNotFoundException();
     }
 
-    async findUserByEmail(email: string): Promise<User> {
-        const foundUser = await this.userRepository.findUserByEmail(email);
+    return foundUser;
+  }
 
-        if (!foundUser) {
-            throw new UserNotFoundException();
-        }
+  async findUserById(id: number): Promise<User> {
+    const foundUser = await this.userRepository.findUserById(id);
 
-        return foundUser;
+    if (!foundUser) {
+      throw new UserNotFoundException();
     }
 
-    async findUserById(id: number): Promise<User> {
-        const foundUser = await this.userRepository.findUserById(id);
+    return foundUser;
+  }
 
-        if (!foundUser) {
-            throw new UserNotFoundException();
-        }
+  async updateUser(id: number, user: UserInputDto): Promise<User> {
+    const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
+    const foundUser = await this.userRepository.updateUser(id, {
+      ...user,
+      password: hashedPassword,
+    });
 
-        return foundUser;
+    if (!foundUser) {
+      throw new UserNotFoundException();
     }
 
-    async updateUser(id: number, user: UserInputDto): Promise<User> {
-        const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
-        const foundUser = await this.userRepository.updateUser(id, {
-            ...user,
-            password: hashedPassword
-        });
+    return foundUser;
+  }
 
-        if (!foundUser) {
-            throw new UserNotFoundException();
-        }
+  async deleteUser(id: number): Promise<true> {
+    const deletedUser = await this.userRepository.deleteUser(id);
 
-        return foundUser;
+    if (!deletedUser) {
+      throw new UserNotFoundException();
     }
 
-    async deleteUser(id: number): Promise<true> {
-        const deletedUser = await this.userRepository.deleteUser(id);
-
-        if (!deletedUser) {
-            throw new UserNotFoundException();
-        }
-
-        return true;
-    }
+    return true;
+  }
 }

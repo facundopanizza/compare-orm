@@ -1,7 +1,10 @@
 import { Module, Type } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import databaseConfig, { OrmEnum, OrmType } from 'src/common/config/database.config';
+import databaseConfig, {
+  OrmEnum,
+  OrmType,
+} from 'src/common/config/database.config';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserTypeorm } from './entities/user.entity.typeorm';
 import { IUserRepository } from './interfaces/user-repository.interface';
@@ -16,7 +19,7 @@ import { getOrmRepository } from 'src/common/utils/getOrmRepository';
 const useClass = getOrmRepository<IUserRepository>({
   prisma: UserPrismaRepository,
   typeorm: UserTypeOrmRepository,
-  drizzle: UserDrizzleRepository
+  drizzle: UserDrizzleRepository,
 });
 
 @Module({
@@ -26,10 +29,12 @@ const useClass = getOrmRepository<IUserRepository>({
     PrismaModule,
   ],
   providers: [
-    UserService, {
+    UserService,
+    {
       provide: USER_REPOSITORY,
-      useClass
-    }],
-  controllers: [UserController]
+      useClass,
+    },
+  ],
+  controllers: [UserController],
 })
-export class UserModule { }
+export class UserModule {}
