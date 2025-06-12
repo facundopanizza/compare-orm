@@ -3,10 +3,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PostInputDto } from '../dtos/input/post.input.dto';
 import { Post } from '../entities/post.entity';
 import { IPostRepository } from '../interfaces/post-repository.interface';
+import { PostFindQueryDto } from '../dtos/input/post.find-query.dto';
 
 @Injectable()
 export class PostPrismaRepository implements IPostRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async createPost(post: PostInputDto): Promise<Post> {
     const createdPost = (await this.prisma.post.create({
@@ -55,5 +56,42 @@ export class PostPrismaRepository implements IPostRepository {
       createdAt: new Date(post.createdAt),
       updatedAt: new Date(post.updatedAt),
     });
+  }
+
+  async findPosts(query: PostFindQueryDto): Promise<{ data: Post[]; total: number }> {
+    const { text, userId, tags, orderBy, order, page = 1, limit = 10 } = query;
+    const where: any = {};
+    if (userId) where.userId = userId;
+    if (text) {
+      where.OR = [
+        { title: { contains: text, mode: 'insensitive' } },
+        { content: { contains: text, mode: 'insensitive' } },
+      ];
+    }
+    if (tags && tags.length > 0) {
+      where.tags = {
+        some: {
+          tagId: { in: tags },
+        },
+      };
+    }
+    const orderByClause = orderBy
+      ? { [orderBy]: order === 'desc' ? 'desc' : 'asc' }
+      : undefined;
+    const skip = (page - 1) * limit;
+
+    const [posts, total] = await Promise.all([
+      this.prisma.post.findMany({
+        where,
+        orderBy: orderByClause,
+        skip,
+        take: limit,
+      }),
+      this.prisma.post.count({ where }),
+    ]);
+    return {
+      data: posts.map((p) => this.toPost(p)),
+      total,
+    };
   }
 }
