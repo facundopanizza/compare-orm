@@ -4,13 +4,22 @@ import { UserOutputDto } from './dtos/output/user.output.dto';
 import { UserNotFoundException } from './exceptions/user-not-found.exception';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { USER_REPOSITORY } from './user.constants';
+import * as bcrypt from 'bcryptjs';
+
+const SALT_ROUNDS = 10;
 
 @Injectable()
 export class UserService {
     constructor(@Inject(USER_REPOSITORY) private userRepository: IUserRepository) { }
 
     async createUser(user: UserInputDto): Promise<UserOutputDto> {
-        return this.userRepository.createUser(user);
+        const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
+
+
+        return this.userRepository.createUser({
+            ...user,
+            password: hashedPassword
+        });
     }
 
     async findUserByEmail(email: string): Promise<UserOutputDto> {
@@ -34,7 +43,11 @@ export class UserService {
     }
 
     async updateUser(id: number, user: UserInputDto): Promise<UserOutputDto> {
-        const foundUser = await this.userRepository.updateUser(id, user);
+        const hashedPassword = bcrypt.hashSync(user.password, SALT_ROUNDS);
+        const foundUser = await this.userRepository.updateUser(id, {
+            ...user,
+            password: hashedPassword
+        });
 
         if (!foundUser) {
             throw new UserNotFoundException();
