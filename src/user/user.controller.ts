@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
-import { ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiOkResponse, ApiParam, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { UserInputDto } from './dtos/input/user.input.dto';
 import { UserOutputDto } from './dtos/output/user.output.dto';
@@ -14,6 +14,7 @@ export class UserController {
     constructor(private userService: UserService) { }
 
     @ApiCreatedResponse({ type: UserOutputDto })
+    @ApiInternalServerErrorResponse()
     @HttpCode(HttpStatus.CREATED)
     @Post()
     async createUser(@Body() user: UserInputDto): Promise<UserOutputDto> {
@@ -32,6 +33,7 @@ export class UserController {
 
     @ApiOkResponse({ type: UserOutputDto })
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
+    @ApiInternalServerErrorResponse()
     @ApiParam({ name: 'email', required: true })
     @Get('find-by-email/:email')
     async findUserByEmail(@Param('email') email: string): Promise<UserOutputDto> {
@@ -50,6 +52,7 @@ export class UserController {
 
     @ApiOkResponse({ type: UserOutputDto })
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
+    @ApiInternalServerErrorResponse()
     @ApiParam({ name: 'id', required: true })
     @Get(':id')
     async findUserById(@Param('id', ParseIntPipe) id: number): Promise<UserOutputDto> {
@@ -68,6 +71,7 @@ export class UserController {
 
     @ApiOkResponse({ type: UserOutputDto })
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
+    @ApiInternalServerErrorResponse()
     @ApiParam({ name: 'id', required: true })
     @Put(':id')
     async updateUser(@Param('id', ParseIntPipe) id: number, @Body() user: UserInputDto): Promise<UserOutputDto> {
@@ -86,6 +90,7 @@ export class UserController {
 
     @ApiOkResponse({ type: UserOutputDto })
     @ApiNotFoundResponse({ description: USER_NOT_FOUND })
+    @ApiInternalServerErrorResponse()
     @ApiParam({ name: 'id', required: true })
     @Delete(':id')
     async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<true | null> {

@@ -2,6 +2,10 @@ import { BaseEntity } from "src/common/entities/base.entity";
 import { Entity } from "typeorm";
 import { UserTypeorm } from "./user.entity.typeorm";
 import { User as UserPrisma } from "@prisma/client";
+import * as schema from '../../../drizzle/schema';
+
+type UserDrizzle = typeof schema.usersTable.$inferSelect;
+
 
 @Entity()
 export class User extends BaseEntity {
@@ -33,6 +37,17 @@ export class User extends BaseEntity {
             password: user.password,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+        });
+    }
+
+    static fromDrizzle(user: UserDrizzle): User {
+        return new User({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            password: user.password,
+            createdAt: new Date(user.createdAt),
+            updatedAt: new Date(user.updatedAt),
         });
     }
 }

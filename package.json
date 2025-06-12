@@ -8,6 +8,13 @@
   "scripts": {
     "typeorm:migration:generate": "npx typeorm-ts-node-commonjs migration:generate typeorm-migrations/InitMigration -d ormconfig.ts",
     "typeorm:migration:run": "npx typeorm-ts-node-commonjs migration:run -d ormconfig.ts",
+    "typeorm:migration:down": "npx typeorm-ts-node-commonjs migration:revert -d ormconfig.ts",
+    "prisma:migrate": "npx prisma migrate dev --schema=prisma/schema.prisma",
+    "prisma:generate": "npx prisma generate --schema=prisma/schema.prisma",
+    "prisma:down": "npx prisma migrate reset --force --schema=prisma/schema.prisma",
+    "drizzle:migrate": "npx drizzle-kit migrate",
+    "drizzle:generate": "npx drizzle-kit generate",
+    "drizzle:push": "npx drizzle-kit push",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -22,6 +29,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@knaadh/nestjs-drizzle-better-sqlite3": "^1.2.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -29,8 +37,10 @@
     "@nestjs/swagger": "^11.2.0",
     "@nestjs/typeorm": "^11.0.0",
     "@prisma/client": "^6.9.0",
+    "better-sqlite3": "^11.10.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "drizzle-orm": "^0.44.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7"
@@ -47,6 +57,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.31",
     "@types/supertest": "^6.0.2",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
